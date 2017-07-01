@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"strconv"
 
 	"net/http"
@@ -17,14 +18,19 @@ var (
 )
 
 func main() {
-	e := echo.New()
+	dir, osErr := os.Getwd()
+	if osErr != nil {
+		log.Fatal(osErr)
+	}
+
 	var err error
-	db, err = bolt.Open("/Users/jonathansteenbergen/go/src/quran/quran.db", 0644, nil)
+	db, err = bolt.Open(dir+"/quran.db", 0644, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
+	e := echo.New()
 	e.GET("/api", surahFind)
 
 	e.Logger.Fatal(e.Start(":3333"))
